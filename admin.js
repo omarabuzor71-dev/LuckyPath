@@ -1,13 +1,28 @@
 function loginAdmin(){
-  if(document.getElementById('pass').value!=='9999') return alert('خطأ');
-  let o=JSON.parse(localStorage.getItem('orders')||'[]');
-  let d=document.getElementById('orders');d.innerHTML='';
-  o.forEach((x,i)=>{if(x.status=='pending') d.innerHTML+=x.user+' '+x.amount+' <button onclick="approve('+i+')">موافقة</button><br>';});
+  const password = document.getElementById('pass').value.trim();
+  if(password !== '9999') return alert('خطأ: كلمة السر غير صحيحة');
+
+  const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+  const ordersDiv = document.getElementById('orders');
+  ordersDiv.innerHTML = '';
+
+  orders.forEach((order, i) => {
+    if(order.status === 'pending'){
+      const btn = document.createElement('button');
+      btn.innerText = 'موافقة';
+      btn.onclick = () => approveOrder(i);
+      const div = document.createElement('div');
+      div.innerText = `${order.user} طلب ${order.amount} كوين`;
+      div.appendChild(btn);
+      ordersDiv.appendChild(div);
+    }
+  });
 }
-function approve(i){
-  let o=JSON.parse(localStorage.getItem('orders'));
-  o[i].status='done';
-  localStorage.setItem('orders',JSON.stringify(o));
+
+function approveOrder(index){
+  const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+  orders[index].status = 'done';
+  localStorage.setItem('orders', JSON.stringify(orders));
   alert('تمت الموافقة');
-  loginAdmin();
+  loginAdmin(); // إعادة تحميل الطلبات
 }
